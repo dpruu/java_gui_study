@@ -1,14 +1,10 @@
 # AWT Program
 
-> 학원생들을 관리하는 프로그램 예제
-
-
+> 학원생들을 관리하는 프로그램 작성해보기
 
 ## 1. 멤버 생성
 
 > 클래스를 생성한다. `Member` 클래스와 `Member` 클래스를 상속받는 `Student`, `Staff`, `Gangsa` 클래스를 추가로 생성한다.
-
-
 
 ### 1. Member 클래스
 
@@ -37,34 +33,10 @@ public class Member {
 	public String getName() {
 		return name;
 	}
-    
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public String getAge() {
-		return age;
-	}
-
-	public void setAge(String age) {
-		this.age = age;
-	}
-
-	public String getSex() {
-		return sex;
-	}
-
-	public void setSex(String sex) {
-		this.sex = sex;
-	}
-
-	public String getAddr() {
-		return addr;
-	}
-
-	public void setAddr(String addr) {
-		this.addr = addr;
-	}
+	// 생략
 }
 ```
 
@@ -89,30 +61,22 @@ public class Member {
 
 ```java
 package awtprj;
-
 public class Student extends Member{
 	private int id;
 	private String classRoom;
-	
 	public int getId() {
 		return id;
 	}
-
 	public void setId(int id) {
 		this.id = id;
 	}
-
 	public String getClassRoom() {
 		return classRoom;
 	}
-
 	public void setClassRoom(String classRoom) {
 		this.classRoom = classRoom;
-	}	
-}
+	}}
 ```
-
-
 
 ## 2. Main 함수
 
@@ -121,19 +85,32 @@ public class Student extends Member{
 <img src="image/image-20220905173919012.png" alt="image-20220905173919012" style="zoom: 50%;" />    <img src="image/image-20220905174035993.png" alt="image-20220905174035993" style="zoom:50%;" />
 
 - 예상 작업물
-- `File`, `Help` 메뉴를 담을 `MenuBar`, `Menu` 각 메뉴마다 `MenuItem` 필요.
-- `Register`, `Manage`, `Search` 버튼과 버튼을 담을 `Panel` 필요.
-- 'Ver 1.0' 문구를 기록하기 위한 `Label` 필요.
+  - `File`, `Help` 메뉴를 담을 `MenuBar`, `Menu` 각 메뉴마다 `MenuItem` 필요.
+  - `Register`, `Manage`, `Search` 버튼과 버튼을 담을 `Panel` 필요.
+  - 'Ver 1.0' 문구를 기록하기 위한 `Label` 필요.
+
 
 ```java
 public class Main extends Frame{
-	MenuBar mb;
-	Menu mf, mh;
-	MenuItem miOpen, miSave, miExit, miAbout;
+	Toolkit tk; 								// 
+	Dimension screenSize, fsize;				// window 및 dialog 위치 조절
+	MenuBar mb;									// Menubar
+	Menu mf, mh;								// Menubar에 들어갈 File, Help 메뉴
+	MenuItem miOpen, miSave, miExit, miAbout;	// File, Help에 들어갈 메뉴 모음
 	
-	Panel p;
-	Button regBtn, manageBtn, searchBtn;
-	Label lb;
+	Panel p;									// 등록, 관리, 검색 버튼 Panel
+	Button regBtn, manageBtn, searchBtn;		// 등록, 관리, 검색 버튼
+    Button studentBtn, gangsaBtn, staffBtn;		// p 버튼 클릭 시 생성되는 dialog의 버튼
+	Button okBtn, cancleBtn;					// dialog의 ok, 취소 버튼
+	Label lb;									// window 창 ver 문구 label
+	Label lbId, lbName, lbAge, lbSex, lbAddr, lbCroom;	//	dialog label
+	
+	CheckboxGroup group;		// 성별 검색용 checkboxgroup
+	Checkbox chman, chwoman;	// 성별 검색용 checkbox
+	
+	TextField	tId, tName, tAge, tAddr, tCroom;	// dialog label별 텍스트 영역
+	
+	Dialog dl[] = new Dialog[2];	// dialog, 배열 형태를 이용 복수개의 dialog를 생성
     
     public static void main(String[] args) {
 		new Main();
@@ -202,6 +179,139 @@ Font myFont = new Font("Serif", Font.BOLD, 25);
 lb.setFont(myFont);
 add(lb, "Center");
 ```
+
+#### 4) SubFrame 작성
+
+- Register, Manage, Search등 버튼을 눌렀을 때 `dialog`를 생성하도록 설정
+
+- `dialog`는 총 배열 형태와 for문을 이용해 필요한 만큼 `dialog`를 생성해 사용
+
+  - 각 버튼마다 `addActionListener()`추가
+  - `EventHandler` 클래스를 생성, 각 버튼 클릭시 `dialog`창을 열 수 있도록 설정
+
+  ```java
+  tk = Toolkit.getDefaultToolkit();
+  screenSize = tk.getScreenSize();
+  
+  dl[0] = new Dialog(this);
+  		// modal 
+  dl[0].setLayout(new GridLayout(1,0));
+  dl[0].add(studentBtn);dl[0].add(gangsaBtn);dl[0].add(staffBtn );
+  dl[0].pack(); // 모든 버튼을 담는 최소 크기로 자동 설정
+  Dimension dlsize = dl[0].getSize();
+  dl[0].setLocation(screenSize.width/2 - dlsize.width/2 , screenSize.height/2 - dlsize.height/2);
+  ```
+
+  > `dialog`창 설정
+
+  ```java
+  class EventHandler implements ActionListener{
+  		public void actionPerformed(ActionEvent ae) {
+  			Object obj = ae.getSource();
+  			if (obj == regBtn) {
+  				dl[0].setTitle("register Member");
+  				dl[0].setVisible(true);
+  			}else if(obj == manageBtn) {
+  				dl[0].setTitle("Management Member");
+  				dl[0].setVisible(true);
+  			}else if (obj == searchBtn){	}
+  ```
+
+  > 버튼 클릭 시 `dialog`창 생성
+
+  <img src="image/image-20220906172846852.png" alt="image-20220906172846852" style="zoom:75%;" />
+
+- Register 버튼 입렵 시 학생, 강사, 직원 별로 등록, 관리하는 창 만들기
+
+  - 멤버 클래스를 생성하면서 설정한 변수들을 설정
+  - 3개의 `Panel`이 필요. 
+    - `Label`을 담는 `Panel`
+    - `TextField`를 담는 `Panel`
+    - 최종 수락 및 취소 버튼을 담는 `Panel`이 필요하다.
+
+```java
+group = new CheckboxGroup();
+chman = new Checkbox("M", group, false);
+chwoman = new Checkbox("W", group, false);
+
+Panel dp1 =new Panel(){
+    public Insets getInsets() {
+        return new Insets(5, 5, 0, 0);
+    }
+};
+
+Panel dpsex = new Panel(new FlowLayout(FlowLayout.LEFT)) {
+			public Insets getInsets() {
+				return new Insets(-5, 0, 0, 0);
+			}
+		};
+dpsex.add(chman);dpsex.add(chwoman);
+
+dp1.setLayout(new GridLayout(6,1));
+dp2.setLayout(new GridLayout(6,1));
+
+dp1.add(lbId = new Label("Num"));
+dp1.add(lbName = new Label("Name"));
+dp1.add(lbAge = new Label("Age"));
+dp1.add(lbSex = new Label("Sex"));
+dp1.add(lbAddr = new Label("Addr"));
+dp1.add(lbCroom = new Label("C Room"));
+
+dp2.add(tId = new TextField());
+dp2.add(tName = new TextField());
+dp2.add(tAge = new TextField());
+dp2.add(dpsex);
+dp2.add(tAddr = new TextField());
+dp2.add(tCroom = new TextField());
+
+okBtn = new Button("OK");
+cancleBtn = new Button("Cancle");
+dp3.add(okBtn); dp3.add(cancleBtn);
+```
+
+> `dialog`창 설정
+
+```java
+class EventHandler implements ActionListener{
+		public void actionPerformed(ActionEvent ae) {
+			Object obj = ae.getSource();
+			if (obj == regBtn) {
+				dl[0].setTitle("register Member");
+				dl[0].setVisible(true);
+			}else if(obj == manageBtn) {
+				dl[0].setTitle("Management Member");
+				dl[0].setVisible(true);
+			}else if (obj == searchBtn){
+				
+			}else if(obj == studentBtn) {
+				if(dl[0].getTitle()=="Management Member") {
+					dl[1].setTitle("Management Student");
+					dl[1].setVisible(true);
+				} else {
+					dl[1].setTitle("Register Student");
+					dl[1].setVisible(true);
+				}
+			}else if(obj == gangsaBtn) {
+				if(dl[0].getTitle()=="Management Member") {
+					dl[1].setTitle("Management gangsa");
+					dl[1].setVisible(true);
+				} else {
+					dl[1].setTitle("Register gangsa");
+					dl[1].setVisible(true);
+				}
+			}else if(obj == staffBtn) {
+				if(dl[0].getTitle()=="Management Member") {
+					dl[1].setTitle("Management staff");
+					dl[1].setVisible(true);
+				} else {
+					dl[1].setTitle("Register staff");
+					dl[1].setVisible(true);
+				}}}}
+```
+
+> 각 입력에 따른 `dialog` 창 `Title` 변경
+
+<img src="image/image-20220906173031254.png" alt="image-20220906173031254" style="zoom:75%;" />
 
 
 
